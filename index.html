@@ -51,7 +51,7 @@
             border-radius: 10px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.15);
         }
-        
+
         .flap {
             position: absolute;
             top: 0;
@@ -64,7 +64,7 @@
             clip-path: polygon(0 0, 100% 0, 50% 100%);
             z-index: 5;
         }
-        
+
         .ribbon {
             position: absolute;
             top: 50%;
@@ -111,7 +111,7 @@
             transition: opacity 0.5s;
             pointer-events: none;
         }
-        
+
         .letter {
             position: absolute;
             top: 50%;
@@ -129,17 +129,17 @@
             box-sizing: border-box;
             overflow-y: auto;
         }
-        
+
         .letter-content {
             width: 100%;
-            height: auto; 
+            height: auto;
             text-align: left;
             color: var(--text-color);
             line-height: 24px;
             background-image: linear-gradient(var(--line-color) 1px, transparent 1px);
             background-size: 100% 24px;
         }
-        
+
         .letter-content h2 {
             font-family: 'Dancing Script', cursive;
             text-align: center;
@@ -148,7 +148,7 @@
             margin: 0;
             margin-bottom: 24px;
         }
-        
+
         .letter-content h2 + h2 {
              margin-bottom: 48px;
         }
@@ -158,7 +158,7 @@
             margin: 0;
             padding-bottom: 24px;
         }
-        
+
         .fold-instruction {
             text-align: center;
             font-size: 13px;
@@ -171,17 +171,17 @@
         .letter::-webkit-scrollbar { width: 8px; }
         .letter::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); }
         .letter::-webkit-scrollbar-thumb { background-color: var(--dark-pink); border-radius: 4px; }
-        
+
         .letter.fold-1 { height: 200px; }
         .letter.fold-2 { height: 100px; }
         .letter.fold-3 { width: 150px; }
-        
+
         .letter.fly-to-envelope {
              transition: all 0.8s ease-in-out;
              transform: scale(0.1);
              opacity: 0;
         }
-        
+
         body.opened .flap { transform: rotateX(180deg); }
         body.opened .envelope-text { opacity: 0; }
         body.opened .letter {
@@ -196,9 +196,9 @@
             right: 20px;
             cursor: default;
         }
-        
+
         .questionnaire-container{position:absolute;background:var(--paper-color);padding:30px 40px;border-radius:20px;border:2px solid #fff;box-shadow:0 10px 35px rgba(0,0,0,.15);width:90%;max-width:400px;opacity:0;transform:translateY(30px) scale(.9);transition:transform .5s ease-out,opacity .5s ease-out;pointer-events:none;z-index:30}.questionnaire-container.visible{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}.questionnaire-container h2{font-family:'Dancing Script',cursive;font-size:32px;margin:0 0 25px;color:var(--dark-pink)}.questionnaire-container .form-group{width:100%;margin-bottom:20px;position:relative}.questionnaire-container label{display:block;margin-bottom:8px;color:var(--text-color);font-weight:700;font-size:14px}.questionnaire-container input[type=text],.questionnaire-container textarea{width:100%;padding:12px 15px;border:2px solid var(--soft-pink);border-radius:10px;box-sizing:border-box;background-color:#fff;color:var(--text-color);font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;font-size:16px;transition:border-color .3s,box-shadow .3s}.questionnaire-container input[type=text]:focus,.questionnaire-container textarea:focus{outline:none;border-color:var(--dark-pink);box-shadow:0 0 10px rgba(240,98,146,.3)}.questionnaire-container textarea{resize:vertical;height:90px}.questionnaire-container button{background:linear-gradient(45deg,var(--dark-pink),#ff8a80);color:#fff;padding:12px 30px;border:none;border-radius:50px;cursor:pointer;font-size:16px;font-weight:700;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 15px rgba(0,0,0,.1);margin-top:10px}.questionnaire-container button:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.15)}
-        
+
         .custom-alert-overlay {
             position: fixed;
             top: 0;
@@ -303,13 +303,13 @@
         <form id="contact-form" action="https://formsubmit.co/emailprivate255@gmail.com" method="POST">
             <input type="hidden" name="_subject" value="Jawaban dari Surat Kejutan!">
             <input type="hidden" name="_next" value="https://farhamkuw.github.io/lastpresent.github.io/">
-            <input type="hidden" name="_captcha" value="false"> 
+            <input type="hidden" name="_captcha" value="false">
 
             <div class="form-group">
                 <label for="impression">Feel free to kesan pesan, keluh kesah on this box below, ham. HARUS YANG PANJANG!!!</label>
                 <textarea id="impression" name="kesan" required></textarea>
             </div>
-            <button type="submit">Send It to me :*</button>
+            <button type="submit" id="submitButton">Send It to me :*</button>
         </form>
     </div>
 
@@ -337,7 +337,7 @@
         const song = document.getElementById('song');
         const questionnaire = document.getElementById('questionnaire');
         const body = document.body;
-        
+
         let isOpened = false;
         let foldCount = 0;
 
@@ -345,7 +345,7 @@
             if (isOpened) return;
             isOpened = true;
             body.classList.add('opened');
-            
+
             const playPromise = song.play();
             if (playPromise !== undefined) {
                 playPromise.catch(error => {
@@ -358,11 +358,11 @@
                 sceneContainer.style.cursor = 'default';
             }, 1500);
         });
-        
+
         letter.addEventListener('click', (e) => {
             if(e.offsetX > letter.clientWidth) return;
             if (!isOpened || foldCount >= 4) return;
-            
+
             foldCount++;
             switch (foldCount) {
                 case 1: letter.classList.add('fold-1'); break;
@@ -373,7 +373,7 @@
                     letter.style.top = `${envelopeRect.top + envelopeRect.height / 2}px`;
                     letter.style.left = `${envelopeRect.left + envelopeRect.width / 2}px`;
                     letter.classList.add('fly-to-envelope');
-                    
+
                     setTimeout(() => {
                         letter.style.display = 'none';
                         sceneContainer.style.display = 'none';
@@ -382,15 +382,15 @@
                     break;
             }
         });
-        
+
         const contactForm = document.getElementById('contact-form');
         const impressionTextarea = document.getElementById('impression');
-        const minWords = 200; // Anda bisa mengubah batas minimal kata di sini
-        
+        const minWords = 2; // Ubah kembali ke 200 setelah berhasil tes
         const errorAlert = document.getElementById('errorAlert');
         const errorAlertClose = document.getElementById('errorAlertClose');
         const successAlert = document.getElementById('successAlert');
         const successAlertClose = document.getElementById('successAlertClose');
+        const submitButton = document.getElementById('submitButton');
 
         function countWords(text) {
             const trimmedText = text.trim();
@@ -399,44 +399,17 @@
         }
 
         contactForm.addEventListener('submit', (event) => {
-            event.preventDefault(); // Hentikan pengiriman default untuk validasi
+            // Selalu hentikan pengiriman form agar kita bisa kontrol
+            event.preventDefault(); 
+            
             const wordCount = countWords(impressionTextarea.value);
 
             if (wordCount < minWords) {
+                // Jika kata kurang, tampilkan pesan eror
                 errorAlert.classList.add('visible');
             } else {
-                // Jika validasi lolos, kirim data di latar belakang
-                const formData = new FormData(contactForm);
-                const submitButton = contactForm.querySelector('button[type="submit"]');
-                submitButton.disabled = true; // Nonaktifkan tombol saat proses kirim
-                submitButton.textContent = 'Sending...';
-
-                fetch(contactForm.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'Accept': 'application/json'
-                    }
-                })
-                .then(response => {
-                    if (response.ok) {
-                        // Jika berhasil, tampilkan pesan sukses
-                        successAlert.classList.add('visible');
-                    } else {
-                        // Jika ada error dari server
-                        alert('Oops! There was a problem submitting your form. Please try again.');
-                    }
-                })
-                .catch(error => {
-                    // Jika ada error jaringan
-                    console.error('Submission error:', error);
-                    alert('Oops! A network error occurred. Please try again.');
-                })
-                .finally(() => {
-                    // Aktifkan kembali tombol
-                    submitButton.disabled = false;
-                    submitButton.textContent = 'Send It to me :*';
-                });
+                // Jika kata cukup, tampilkan pesan sukses
+                successAlert.classList.add('visible');
             }
         });
 
@@ -445,9 +418,10 @@
         });
 
         successAlertClose.addEventListener('click', () => {
-            // Arahkan ke halaman berikutnya setelah pengguna melihat pesan
-            const redirectUrl = contactForm.querySelector('input[name="_next"]').value;
-            window.location.href = redirectUrl;
+            // Setelah tombol "Continue" di pop-up sukses di klik,
+            // KIRIM FORMULIRNYA SECARA MANUAL.
+            // Ini akan membuat formsubmit.co mengambil alih dan me-redirect.
+            contactForm.submit();
         });
 
     </script>
