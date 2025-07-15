@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farham's Love Letter!</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --baby-blue: #e0f7fa;
+            --soft-pink: #ffcdd2;
+            --dark-pink: #f06292;
+            --paper-color: #ffcdd2;
+            --text-color: #5d4037;
+            --line-color: rgba(179, 229, 252, 0.7);
+        }
+
+        body {
+            background-color: var(--baby-blue);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+
+        .scene-container {
+            position: absolute;
+            width: 300px;
+            height: 200px;
+            cursor: pointer;
+            transition: all 1s ease-in-out;
+            z-index: 10;
+        }
+
+        .envelope-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .envelope-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: var(--soft-pink);
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        
+        .flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background-color: var(--soft-pink);
+            transform-origin: top;
+            transition: transform 0.5s 0.2s ease-in-out;
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
+            z-index: 5;
+        }
+        
+        .ribbon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 110%;
+            background-color: var(--dark-pink);
+            z-index: 3;
+        }
+
+        .bow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 25px;
+            height: 25px;
+            background: var(--dark-pink);
+            border-radius: 50%;
+            z-index: 4;
+        }
+        .bow::before, .bow::after {
+            content: '';
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: var(--dark-pink);
+            border-radius: 50%;
+        }
+        .bow::before { left: -25px; top: -18px; transform: rotate(-45deg); }
+        .bow::after { right: -25px; top: -18px; transform: rotate(45deg); }
+
+        .envelope-text {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: max-content;
+            font-family: 'Dancing Script', cursive;
+            font-size: 18px;
+            color: #ab47bc;
+            z-index: 6;
+            transition: opacity 0.5s;
+            pointer-events: none;
+        }
+        
+        .letter {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 320px;
+            height: 400px;
+            background-color: var(--paper-color);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0);
+            transition: all 0.6s ease-in-out;
+            cursor: pointer;
+            z-index: 20;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+        
+        .letter-content {
+            width: 100%;
+            height: auto; 
+            text-align: left;
+            color: var(--text-color);
+            line-height: 24px;
+            background-image: linear-gradient(var(--line-color) 1px, transparent 1px);
+            background-size: 100% 24px;
+        }
+        
+        .letter-content h2 {
+            font-family: 'Dancing Script', cursive;
+            text-align: center;
+            font-size: 30px;
+            line-height: 24px;
+            margin: 0;
+            margin-bottom: 24px;
+        }
+        
+        .letter-content h2 + h2 {
+             margin-bottom: 48px;
+        }
+
+        .letter-content p {
+            font-size: 16px;
+            margin: 0;
+            padding-bottom: 24px;
+        }
+        
+        .fold-instruction {
+            text-align: center;
+            font-size: 13px;
+            font-style: italic;
+            color: #8d6e63;
+            margin-top: 32px;
+            padding-bottom: 0 !important;
+        }
+
+        .letter::-webkit-scrollbar { width: 8px; }
+        .letter::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); }
+        .letter::-webkit-scrollbar-thumb { background-color: var(--dark-pink); border-radius: 4px; }
+        
+        .letter.fold-1 { height: 200px; }
+        .letter.fold-2 { height: 100px; }
+        .letter.fold-3 { width: 150px; }
+        
+        .letter.fly-to-envelope {
+             transition: all 0.8s ease-in-out;
+             transform: scale(0.1);
+             opacity: 0;
+        }
+        
+        body.opened .flap { transform: rotateX(180deg); }
+        body.opened .envelope-text { opacity: 0; }
+        body.opened .letter {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        .scene-container.cornered {
+            width: 150px;
+            height: 100px;
+            bottom: 20px;
+            right: 20px;
+            cursor: default;
+        }
+        
+        .questionnaire-container{position:absolute;background:var(--paper-color);padding:30px 40px;border-radius:20px;border:2px solid #fff;box-shadow:0 10px 35px rgba(0,0,0,.15);width:90%;max-width:400px;opacity:0;transform:translateY(30px) scale(.9);transition:transform .5s ease-out,opacity .5s ease-out;pointer-events:none;z-index:30}.questionnaire-container.visible{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}.questionnaire-container h2{font-family:'Dancing Script',cursive;font-size:32px;margin:0 0 25px;color:var(--dark-pink)}.questionnaire-container .form-group{width:100%;margin-bottom:20px;position:relative}.questionnaire-container label{display:block;margin-bottom:8px;color:var(--text-color);font-weight:700;font-size:14px}.questionnaire-container input[type=text],.questionnaire-container textarea{width:100%;padding:12px 15px;border:2px solid var(--soft-pink);border-radius:10px;box-sizing:border-box;background-color:#fff;color:var(--text-color);font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;font-size:16px;transition:border-color .3s,box-shadow .3s}.questionnaire-container input[type=text]:focus,.questionnaire-container textarea:focus{outline:none;border-color:var(--dark-pink);box-shadow:0 0 10px rgba(240,98,146,.3)}.questionnaire-container textarea{resize:vertical;height:90px}.questionnaire-container button{background:linear-gradient(45deg,var(--dark-pink),#ff8a80);color:#fff;padding:12px 30px;border:none;border-radius:50px;cursor:pointer;font-size:16px;font-weight:700;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 15px rgba(0,0,0,.1);margin-top:10px}.questionnaire-container button:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.15)}
+        
+        .custom-alert-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .custom-alert-overlay.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .custom-alert-box {
+            background: var(--paper-color);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+            width: 90%;
+            max-width: 350px;
+            transform: scale(0.7);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        }
+        .custom-alert-overlay.visible .custom-alert-box {
+            transform: scale(1);
+            opacity: 1;
+        }
+        .custom-alert-header {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-weight: 700;
+            font-size: 24px;
+            color: red;
+            margin-bottom: 15px;
+        }
+        .custom-alert-message {
+            font-size: 16px;
+            color: var(--text-color);
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        .custom-alert-button {
+            background: var(--dark-pink);
+            color: #fff;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 700;
+            transition: transform 0.2s;
+        }
+        .custom-alert-button:hover {
+            transform: scale(1.05);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="scene-container" id="sceneContainer">
+        <div class="envelope-wrapper">
+            <div class="envelope-text">ur beloved, Fathir</div>
+            <div class="envelope-back"></div>
+            <div class="ribbon"></div>
+            <div class="bow"></div>
+            <div class="flap"></div>
+        </div>
+    </div>
+
+    <div class="letter" id="letter">
+        <div class="letter-content" id="letterContent">
+            <h2>For, </h2>
+            <h2>Annisa Farham. </h2>
+            <p>Hallow Sayang, this letter is special from me.</p>
+            <p>This letter will contain any words from me, that I can't to say It front of ur face, cz Im shy, hehe.</p>
+            <p>Selama ini kamu selalu bilang bahwa aku suda bosan dan kamu suda tida menarik buat aku kan? no its not, you'll always be ma numero uno favorite person,
+                except you're cheatin' on me, yeah? don't try to do that ya sayanggg... Cz I don't how to face that shit if its happen to me.</p>
+            <p>Then you know what? I was really really grateful have you on my side, on my life, on any part of me.</p>
+            <p> I put more expectation on you, on us. So don't break my heart, ya??? Don't be an jerk, cz you're the sweetest n supportive GF I've ever had.
+                 Keep it till we get married ya hehe :&gt;</p>
+            <p>Aku tau selama ini ga mudah buat kita berdua bisa sampai dititik ini, tapi terimakasih karna masi terus ada sama aku, eventho you're almost gave up on me :(</p>
+            <p>Aku minta maaf kalau selama ini banyak melakukan kesalahan dan bikin kamu cape bangett, but trust me, everyday on my life I'd try to be better than yesterday.
+            But like what I've said, sometimes its not goin' well.
+            You've must trust me, I would do it more more better for you, for us.</p>
+            <p> I think thats enough from me, love you more than anything, bb.</p>
+            <p style="text-align: center; margin-top: 24px;">Ur beloved❤️</p>
+            <p style="text-align: center; margin-top: 24px;">Fathir</p>
+            <p class="fold-instruction">(klik ya ham buat lipet kertasnya HAHAHA)</p>
+        </div>
+    </div>
+
+    <div class="questionnaire-container" id="questionnaire">
+        <h2>Gimme ur words, pweeaaseee :))</h2>
+        <form id="contact-form" action="https://formsubmit.co/emailprivate255@gmail.com" method="POST">
+            <input type="hidden" name="_subject" value="Jawaban dari Surat Kejutan!">
+            <input type="hidden" name="_next" value="https://farhamkuw.github.io/lastpresent.github.io/">
+            <input type="hidden" name="_captcha" value="false"> 
+
+            <div class="form-group">
+                <label for="impression">Feel free to kesan pesan, keluh kesah on this box below, ham. HARUS YANG PANJANG!!!</label>
+                <textarea id="impression" name="kesan" required></textarea>
+            </div>
+            <button type="submit">Send It to me :*</button>
+        </form>
+    </div>
+
+    <div class="custom-alert-overlay" id="errorAlert">
+        <div class="custom-alert-box">
+            <div class="custom-alert-header">KANN DIBILANG JUGA YANG PANJANG HIHHH</div>
+            <p class="custom-alert-message">TAMBAHIN LAGI HAM, MARAH YA AKU !!!!</p>
+            <button id="errorAlertClose" class="custom-alert-button">IYA IYA</button>
+        </div>
+    </div>
+
+    <div class="custom-alert-overlay" id="successAlert">
+        <div class="custom-alert-box">
+            <div class="custom-alert-header" style="color: #f06292;">Thank You! ❤️</div>
+            <p class="custom-alert-message">okayyy, thankyou for your words, I'll read It. Before you'll continue see the last present I made for you, the username is: <strong>what's our first date food?</strong> and the password is: <strong>what's our last date food?</strong></p>
+            <button id="successAlertClose" class="custom-alert-button" style="background: #f06292;">Continue</button>
+        </div>
+    </div>
+
+    <audio id="song" src="Sweet.mp3" preload="auto" loop></audio>
+
+    <script>
+        const sceneContainer = document.getElementById('sceneContainer');
+        const letter = document.getElementById('letter');
+        const song = document.getElementById('song');
+        const questionnaire = document.getElementById('questionnaire');
+        const body = document.body;
+        
+        let isOpened = false;
+        let foldCount = 0;
+
+        sceneContainer.addEventListener('click', () => {
+            if (isOpened) return;
+            isOpened = true;
+            body.classList.add('opened');
+            
+            const playPromise = song.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.error("Gagal memutar audio: Pastikan file 'Sweet.mp3' ada di folder yang sama.", error);
+                });
+            }
+
+            setTimeout(() => {
+                sceneContainer.classList.add('cornered');
+                sceneContainer.style.cursor = 'default';
+            }, 1500);
+        });
+        
+        letter.addEventListener('click', (e) => {
+            if(e.offsetX > letter.clientWidth) return;
+            if (!isOpened || foldCount >= 4) return;
+            
+            foldCount++;
+            switch (foldCount) {
+                case 1: letter.classList.add('fold-1'); break;
+                case 2: letter.classList.add('fold-2'); break;
+                case 3: letter.classList.add('fold-3'); break;
+                case 4:
+                    const envelopeRect = sceneContainer.getBoundingClientRect();
+                    letter.style.top = `${envelopeRect.top + envelopeRect.height / 2}px`;
+                    letter.style.left = `${envelopeRect.left + envelopeRect.width / 2}px`;
+                    letter.classList.add('fly-to-envelope');
+                    
+                    setTimeout(() => {
+                        letter.style.display = 'none';
+                        sceneContainer.style.display = 'none';
+                        questionnaire.classList.add('visible');
+                    }, 900);
+                    break;
+            }
+        });
+        
+        const contactForm = document.getElementById('contact-form');
+        const impressionTextarea = document.getElementById('impression');
+        const minWords = 200; // Anda bisa mengubah batas minimal kata di sini
+        
+        const errorAlert = document.getElementById('errorAlert');
+        const errorAlertClose = document.getElementById('errorAlertClose');
+        const successAlert = document.getElementById('successAlert');
+        const successAlertClose = document.getElementById('successAlertClose');
+
+        function countWords(text) {
+            const trimmedText = text.trim();
+            if (trimmedText === '') return 0;
+            return trimmedText.split(/\s+/).length;
+        }
+
+        contactForm.addEventListener('submit', (event) => {
+            event.preventDefault(); // Hentikan pengiriman default untuk validasi
+            const wordCount = countWords(impressionTextarea.value);
+
+            if (wordCount < minWords) {
+                errorAlert.classList.add('visible');
+            } else {
+                // Jika validasi lolos, kirim data di latar belakang
+                const formData = new FormData(contactForm);
+                const submitButton = contactForm.querySelector('button[type="submit"]');
+                submitButton.disabled = true; // Nonaktifkan tombol saat proses kirim
+                submitButton.textContent = 'Sending...';
+
+                fetch(contactForm.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Jika berhasil, tampilkan pesan sukses
+                        successAlert.classList.add('visible');
+                    } else {
+                        // Jika ada error dari server
+                        alert('Oops! There was a problem submitting your form. Please try again.');
+                    }
+                })
+                .catch(error => {
+                    // Jika ada error jaringan
+                    console.error('Submission error:', error);
+                    alert('Oops! A network error occurred. Please try again.');
+                })
+                .finally(() => {
+                    // Aktifkan kembali tombol
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Send It to me :*';
+                });
+            }
+        });
+
+        errorAlertClose.addEventListener('click', () => {
+            errorAlert.classList.remove('visible');
+        });
+
+        successAlertClose.addEventListener('click', () => {
+            // Arahkan ke halaman berikutnya setelah pengguna melihat pesan
+            const redirectUrl = contactForm.querySelector('input[name="_next"]').value;
+            window.location.href = redirectUrl;
+        });
+
+    </script>
+</body>
+</html>
